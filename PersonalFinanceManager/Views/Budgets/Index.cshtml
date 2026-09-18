@@ -1,0 +1,12 @@
+@model IReadOnlyList<PersonalFinanceManager.Models.BudgetProgressViewModel>
+@{ ViewData["Title"] = "Budgets"; }
+<section class="dashboard-header"><div><p class="eyebrow">SPEND WITH INTENTION</p><h1>Monthly budgets</h1><p class="subtle">Set a limit and see how much is left for each expense category.</p></div><a class="primary-button text-decoration-none" asp-action="Create"><span>＋</span> Set a budget</a></section>
+@if (TempData["Success"] is string message) { <div class="alert alert-success border-0 shadow-sm">@message</div> }
+<section class="budget-cards">
+@foreach (var item in Model)
+{
+    var state = item.Percentage >= 100 ? "danger" : item.Percentage >= 80 ? "warning" : "";
+    <article class="budget-card"><div class="budget-card-heading"><div><span class="category-color" style="background:@item.Budget.Category?.Color"></span><strong>@item.Budget.Category?.Name</strong></div><div><a class="edit-link" asp-action="Edit" asp-route-id="@item.Budget.Id">Edit</a><form class="inline-form" asp-action="Delete" asp-route-id="@item.Budget.Id" method="post"><button onclick="return confirm('Remove this budget?')" aria-label="Remove budget">×</button></form></div></div><h2>Rs. @item.Spent.ToString("N0") <small>spent of Rs. @item.Budget.Amount.ToString("N0")</small></h2><div class="progress"><div class="progress-bar @state" role="progressbar" style="width:@item.Percentage%"></div></div><div class="budget-card-footer"><span>@item.Percentage% used</span><b class="@state">Rs. @item.Remaining.ToString("N0") left</b></div></article>
+}
+@if (!Model.Any()) { <div class="empty-state"><div>◉</div><h3>No budgets for this month</h3><p>Set a spending limit for Food, Transport or another expense category.</p><a class="primary-button text-decoration-none" asp-action="Create">Set first budget</a></div> }
+</section>

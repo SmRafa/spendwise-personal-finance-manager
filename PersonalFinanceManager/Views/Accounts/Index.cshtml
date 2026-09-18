@@ -1,0 +1,11 @@
+@model IEnumerable<PersonalFinanceManager.Models.AccountBalanceViewModel>
+@{ ViewData["Title"] = "Accounts"; }
+<section class="dashboard-header"><div><p class="eyebrow">MANAGE YOUR MONEY</p><h1>Your accounts</h1><p class="subtle">Track cash, banks and digital wallets.</p></div><a class="primary-button text-decoration-none" asp-action="Create"><span>＋</span> Add account</a></section>
+@if (TempData["Success"] is string message) { <div class="alert alert-success border-0 shadow-sm">@message</div> }
+<section class="accounts-grid">
+@foreach (var item in Model) {
+    var account = item.Account;
+    <article class="account-card"><div class="account-card-top"><span class="account-type">@account.Type</span><div><a class="edit-link" asp-action="Edit" asp-route-id="@account.Id">Edit</a><form class="inline-form" asp-action="Delete" asp-route-id="@account.Id" method="post"><button class="delete-button" onclick="return confirm('Delete this account?')" aria-label="Delete account">×</button></form></div></div><p>@account.Name</p><h2>Rs. @item.CurrentBalance.ToString("N0")</h2><small>Current balance</small></article>
+}
+@if (!Model.Any()) { <div class="empty-state"><div>▣</div><h3>No accounts yet</h3><p>Create your first account to start tracking your finances.</p><a class="primary-button text-decoration-none" asp-action="Create">Create account</a></div> }
+</section>

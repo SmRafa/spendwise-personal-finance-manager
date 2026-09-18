@@ -1,0 +1,78 @@
+@using Microsoft.EntityFrameworkCore
+@using System.Security.Claims
+@inject PersonalFinanceManager.Data.ApplicationDbContext Db
+@{
+    var profileName = User.Identity?.Name;
+    var profileImage = string.Empty;
+    var currency = "PKR";
+    var savedTheme = "System";
+    if (User.Identity?.IsAuthenticated == true)
+    {
+        var preference = await Db.UserPreferences.FirstOrDefaultAsync(p => p.UserId == User.FindFirstValue(ClaimTypes.NameIdentifier));
+        if (!string.IsNullOrWhiteSpace(preference?.DisplayName)) { profileName = preference.DisplayName; }
+        profileImage = preference?.ProfileImagePath ?? "";
+        currency = preference?.Currency ?? "PKR";
+        savedTheme = preference?.Theme ?? "System";
+    }
+}
+<!DOCTYPE html>
+<html lang="en" data-preferred-theme="@savedTheme.ToLowerInvariant()">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - SpendWise</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/professional.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/PersonalFinanceManager.styles.css" asp-append-version="true" />
+    <link rel="manifest" href="~/manifest.webmanifest" />
+    <meta name="theme-color" content="#5853eb" />
+</head>
+<body data-currency="@currency">
+    <div class="app-shell">
+        <aside class="sidebar" id="sidebar">
+            <a class="brand" asp-controller="Home" asp-action="Index"><span class="brand-mark">S</span><span>spendwise</span></a>
+            <nav class="nav-menu">
+                <p class="nav-label">MENU</p>
+                <a class="nav-link active" asp-controller="Home" asp-action="Index"><span>⌂</span> Dashboard</a>
+                <a class="nav-link" asp-controller="Transactions" asp-action="Index"><span>⇄</span> Transactions</a>
+                <a class="nav-link" asp-controller="Transfers" asp-action="Index"><span>↔</span> Transfers</a>
+                <a class="nav-link" asp-controller="RecurringTransactions" asp-action="Index"><span>↻</span> Recurring</a>
+                <a class="nav-link" asp-controller="Accounts" asp-action="Index"><span>▣</span> Accounts</a>
+                <a class="nav-link" asp-controller="Budgets" asp-action="Index"><span>◉</span> Budgets</a>
+                <a class="nav-link" asp-controller="Goals" asp-action="Index"><span>◎</span> Goals</a>
+                <a class="nav-link" asp-controller="Reports" asp-action="Index"><span>▤</span> Reports</a>
+                <p class="nav-label space-top">MANAGE</p>
+                <a class="nav-link" asp-controller="Categories" asp-action="Index"><span>◌</span> Categories</a>
+                <a class="nav-link" asp-controller="Settings" asp-action="Index"><span>⚙</span> Settings</a>
+                @if (User.IsInRole("Admin")) { <a class="nav-link" asp-controller="Admin" asp-action="Index"><span>◈</span> Admin</a> }
+            </nav>
+            <div class="sidebar-help"><div class="help-icon">?</div><strong>Need help?</strong><p>Read our guides or contact support.</p><a href="#">Get support →</a></div>
+            <div class="profile">
+                @if (!string.IsNullOrWhiteSpace(profileImage)) { <img class="avatar profile-image" src="@profileImage" alt="Profile photo" /> } else { <div class="avatar">PF</div> }
+                <div class="profile-copy">
+                    @if (User.Identity?.IsAuthenticated == true) { <strong>@profileName</strong><small>Personal account</small> }
+                    else { <a class="sign-in-link" asp-controller="Account" asp-action="Login">Sign in</a><small>Access your account</small> }
+                </div>
+                @if (User.Identity?.IsAuthenticated == true) { <form class="logout-form" asp-controller="Account" asp-action="Logout" method="post"><button class="logout-button" type="submit" aria-label="Log out" title="Log out">↪</button></form> }
+            </div>
+        </aside>
+        <main class="main-content">
+            <header class="topbar">
+                <button class="menu-button" id="menuButton" aria-label="Open menu">☰</button>
+                <div class="breadcrumb">Overview <span>/</span> Dashboard</div>
+                <div class="top-actions">
+                    <button class="theme-button" id="themeButton" aria-label="Toggle dark mode"><span class="sun">☼</span><span class="moon">☾</span></button>
+                    <vc:notifications />
+                    <button class="month-picker">@DateTime.Today.ToString("MMMM yyyy") <span>⌄</span></button>
+                </div>
+            </header>
+            @RenderBody()
+        </main>
+    </div>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

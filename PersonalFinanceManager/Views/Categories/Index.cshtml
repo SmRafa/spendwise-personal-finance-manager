@@ -1,0 +1,12 @@
+@model IEnumerable<PersonalFinanceManager.Models.Category>
+@{ ViewData["Title"] = "Categories"; }
+<section class="dashboard-header"><div><p class="eyebrow">ORGANIZE TRANSACTIONS</p><h1>Categories</h1><p class="subtle">Use categories to understand where your money goes.</p></div><a class="primary-button text-decoration-none" asp-action="Create"><span>＋</span> Add category</a></section>
+@if (TempData["Success"] is string message) { <div class="alert alert-success border-0 shadow-sm">@message</div> }
+<section class="category-sections">
+    <div><h3 class="category-heading">Income</h3><div class="category-list">
+    @foreach (var category in Model.Where(c => c.Type == PersonalFinanceManager.Models.CategoryType.Income)) { <article class="category-item"><i style="background:@category.Color"></i><strong>@category.Name</strong><span>Income</span><a class="edit-link" asp-action="Edit" asp-route-id="@category.Id">Edit</a><form asp-action="Delete" asp-route-id="@category.Id" method="post"><button onclick="return confirm('Delete this category?')" aria-label="Delete category">×</button></form></article> }
+    </div></div>
+    <div><h3 class="category-heading">Expenses</h3><div class="category-list">
+    @foreach (var category in Model.Where(c => c.Type == PersonalFinanceManager.Models.CategoryType.Expense)) { <article class="category-item"><i style="background:@category.Color"></i><strong>@category.Name</strong><span>Expense</span><a class="edit-link" asp-action="Edit" asp-route-id="@category.Id">Edit</a><form asp-action="Delete" asp-route-id="@category.Id" method="post"><button onclick="return confirm('Delete this category?')" aria-label="Delete category">×</button></form></article> }
+    </div></div>
+</section>

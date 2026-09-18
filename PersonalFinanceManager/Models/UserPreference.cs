@@ -1,0 +1,3 @@
+using System.ComponentModel.DataAnnotations;
+namespace PersonalFinanceManager.Models;
+public class UserPreference { public int Id{get;set;} public string UserId{get;set;}=string.Empty; [Required,StringLength(50),Display(Name="Display name")] public string DisplayName{get;set;}=""; [Required,Display(Name="Default currency")] public string Currency{get;set;}="PKR"; [Display(Name="Appearance")] public string Theme{get;set;}="System"; [Display(Name="Budget alerts")] public bool BudgetAlerts{get;set;}=true; [Display(Name="Goal deadline alerts")] public bool GoalAlerts{get;set;}=true; public string? ProfileImagePath{get;set;} [System.ComponentModel.DataAnnotations.Schema.NotMapped,Display(Name="Profile photo")] public IFormFile? ProfileImage{get;set;} }

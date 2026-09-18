@@ -1,0 +1,30 @@
+# .NET build output
+[Bb]in/
+[Oo]bj/
+
+# Visual Studio / Rider / VS Code user files
+.vs/
+.vscode/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.bak
+
+# Local logs and development databases
+*.log
+*.db
+*.db-shm
+*.db-wal
+
+# User-uploaded profile photos and transaction receipts
+PersonalFinanceManager/wwwroot/uploads/
+
+# Local environment overrides and secrets
+appsettings.Local.json
+appsettings.*.Local.json
+secrets.json
+
+# Test/build coverage artifacts
+TestResults/
+coverage/

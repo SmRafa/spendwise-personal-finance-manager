@@ -1,0 +1,3 @@
+using System.ComponentModel.DataAnnotations;
+namespace PersonalFinanceManager.Models;
+public class AccountTransfer { public int Id { get; set; } [Display(Name="From account"), Range(1,int.MaxValue)] public int FromAccountId { get; set; } public Account? FromAccount { get; set; } [Display(Name="To account"), Range(1,int.MaxValue)] public int ToAccountId { get; set; } public Account? ToAccount { get; set; } [Range(1,9999999999)] public decimal Amount { get; set; } [DataType(DataType.Date)] public DateTime TransferDate { get; set; }=DateTime.Today; [StringLength(250)] public string? Note { get; set; } public string? UserId { get; set; } public DateTime CreatedAt { get; set; }=DateTime.UtcNow; }

@@ -1,0 +1,33 @@
+@model PersonalFinanceManager.Models.DashboardViewModel
+@{ ViewData["Title"] = "Dashboard"; }
+@{
+    var chartMax = Math.Max(1m, Model.MonthlyChart.SelectMany(point => new[] { point.Income, point.Expense }).Max());
+    var budgetSpent = Model.BudgetProgress.Sum(item => item.Spent);
+    var budgetPercent = Model.BudgetLimit == 0 ? 0 : Math.Min(100, (int)Math.Round(budgetSpent / Model.BudgetLimit * 100));
+}
+
+<section class="dashboard-header">
+    <div><p class="eyebrow">YOUR FINANCIAL OVERVIEW</p><h1>Good morning, @Model.DisplayName <span>👋</span></h1><p class="subtle">Here's what's happening with your money this month.</p></div>
+    <button class="primary-button"><span>＋</span> Add transaction</button>
+</section>
+
+<section class="stats-grid">
+    <article class="stat-card balance"><div class="stat-head"><span>Net balance</span><span class="stat-icon">▣</span></div><h2>Rs. @Model.NetBalance.ToString("N0")</h2><p class="positive">Live <span>across all accounts</span></p></article>
+    <article class="stat-card"><div class="stat-head"><span>Total income</span><span class="stat-icon green">↙</span></div><h2>Rs. @Model.MonthlyIncome.ToString("N0")</h2><p class="positive">This month <span>income received</span></p></article>
+    <article class="stat-card"><div class="stat-head"><span>Total expenses</span><span class="stat-icon red">↗</span></div><h2>Rs. @Model.MonthlyExpense.ToString("N0")</h2><p class="negative">This month <span>money spent</span></p></article>
+    <article class="stat-card"><div class="stat-head"><span>Monthly savings</span><span class="stat-icon purple">◈</span></div><h2>Rs. @Model.MonthlySavings.ToString("N0")</h2><p class="positive">Income minus <span>expenses</span></p></article>
+</section>
+
+<section class="content-grid">
+    <article class="panel spending-panel"><div class="panel-heading"><div><h3>Spending overview</h3><p>Income and expenses for the last 6 months</p></div><span class="chart-hint">Hover a month</span></div><div class="chart-legend"><span><i class="legend-income"></i>Income</span><span><i class="legend-expense"></i>Expenses</span></div><div class="chart-summary" id="chartSummary">Hover a month to see details</div><div class="bar-chart"><div class="chart-y"><span>Max</span><span></span><span></span><span></span><span>0</span></div><div class="bars">@foreach (var point in Model.MonthlyChart) { var incomeHeight = point.Income / chartMax * 100; var expenseHeight = point.Expense / chartMax * 100; <button class="bar-pair @(point.Label == DateTime.Today.ToString("MMM") ? "current" : "")" type="button" data-month="@point.Label" data-income="@point.Income.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture)" data-expense="@point.Expense.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture)"><i style="height:@incomeHeight.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture)%"></i><b style="height:@expenseHeight.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture)%"></b><span>@point.Label</span></button> }</div></div></article>
+    <article class="panel budget-panel"><div class="panel-heading"><div><h3>Budget progress</h3><p>This month's saved budgets</p></div><a asp-controller="Budgets" asp-action="Index">View all</a></div>
+    @if (Model.BudgetLimit > 0) { <div class="donut" style="background:conic-gradient(var(--brand) 0 @budgetPercent%,#edeef4 @budgetPercent%)"><div><strong>Rs. @budgetSpent.ToString("N0")</strong><span>of Rs. @Model.BudgetLimit.ToString("N0")</span></div></div><p class="budget-status"><b>@budgetPercent%</b> of your monthly budget used</p><div class="budget-list">@foreach (var item in Model.BudgetProgress.Take(3)) { <div><span class="category-dot" style="background:@item.Budget.Category?.Color">●</span><p>@item.Budget.Category?.Name<small>Rs. @item.Spent.ToString("N0") of Rs. @item.Budget.Amount.ToString("N0")</small></p><b>@item.Percentage%</b></div> }</div> } else { <div class="empty-mini">No monthly budgets yet. <a asp-controller="Budgets" asp-action="Create">Set one now.</a></div> }</article>
+</section>
+
+<section class="panel transactions-panel"><div class="panel-heading"><div><h3>Recent transactions</h3><p>Your latest financial activity</p></div><a asp-controller="Transactions" asp-action="Index">View all transactions →</a></div><div class="transaction-table">
+@foreach (var transaction in Model.RecentTransactions)
+{
+    <div class="transaction-row"><span class="transaction-icon @(transaction.Type == PersonalFinanceManager.Models.TransactionType.Income ? "salary" : "food")">@(transaction.Type == PersonalFinanceManager.Models.TransactionType.Income ? "↓" : "↑")</span><div><strong>@(string.IsNullOrWhiteSpace(transaction.Note) ? transaction.Category?.Name : transaction.Note)</strong><small>@transaction.Category?.Name · @transaction.TransactionDate.ToString("dd MMM yyyy")</small></div><span class="account-pill">@transaction.Account?.Name</span><b class="@(transaction.Type == PersonalFinanceManager.Models.TransactionType.Income ? "income" : "expense")">@(transaction.Type == PersonalFinanceManager.Models.TransactionType.Income ? "+" : "−") Rs. @transaction.Amount.ToString("N0")</b><span></span></div>
+}
+@if (!Model.RecentTransactions.Any()) { <div class="empty-mini">No transactions yet. <a asp-controller="Transactions" asp-action="Create">Add your first one.</a></div> }
+</div></section>
