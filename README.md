@@ -41,16 +41,29 @@ Run: dotnet test
 
 Current automated checks cover goal progress, savings calculation, and account balance view-model behavior.
 
-## Suggested Screenshots
+## Screenshots
 
-Add these images to a docs/screenshots folder before publishing to GitHub:
+### Dashboard
 
-- Dashboard (light mode)
-- Dashboard (dark mode)
-- Transactions with filters
-- Budgets and goals
-- Reports / print preview
-- Settings page
+![SpendWise dashboard in light mode](docs/screenshots/01-dashboard-light.png)
+
+### Transactions and accounts
+
+![Transaction ledger with filtering and actions](docs/screenshots/02-transactions.png)
+
+![Account balances](docs/screenshots/03-accounts.png)
+
+### Budgeting and goals
+
+![Monthly budget progress](docs/screenshots/04-budgets.png)
+
+![Financial savings goal](docs/screenshots/05-goals.png)
+
+### Reports and dark mode
+
+![Financial reports](docs/screenshots/06-reports.png)
+
+![SpendWise dashboard in dark mode](docs/screenshots/07-dark-mode.png)
 
 ## Future Enhancements
 
